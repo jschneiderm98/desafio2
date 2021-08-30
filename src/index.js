@@ -22,17 +22,37 @@ function checksExistsUserAccount(request, response, next) {
 
 function checksCreateTodosUserAvailability(request, response, next) {
   const { user } = request;
-  
+
   const avaible = user.pro || user.todos.length < 10;
   if (!avaible)
-    return response.status(402).json({ error: 'Pro plan necessary for more than 10 todos' });
+    return response.status(403).json({ error: 'Pro plan necessary for more than 10 todos' });
   
     return next();
 
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const todoId = request.params.id;
+  if (!validate(todoId))
+    return response.status(400).json({ error: 'Todo id is not UUID'});
+    
+  const userInStorage = users.find((user) => user.username === request.headers.username);
+
+  if (!userInStorage)
+    return response.status(404).json({error: "User not found"});
+
+  const todo = userInStorage.todos.find((todo) => {
+    return todo.id === todoId
+  });
+
+  if (!todo)
+    return response.status(404).json({error: "Todo not found"});
+  
+  request.user = userInStorage;
+  request.todo = todo;
+
+  return next();
+
 }
 
 function findUserById(request, response, next) {
