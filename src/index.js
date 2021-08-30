@@ -29,7 +29,14 @@ function checksTodoExists(request, response, next) {
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const userInStorage = users.find((user) => user.id === request.params.id);
+
+  if (!userInStorage)
+    return response.status(404).json({error: "User not found"});
+
+  request.user = userInStorage;
+
+  return next();
 }
 
 app.post('/users', (request, response) => {
