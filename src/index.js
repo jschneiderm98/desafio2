@@ -21,7 +21,14 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+  
+  const avaible = user.pro || user.todos.length < 10;
+  if (!avaible)
+    return response.status(402).json({ error: 'Pro plan necessary for more than 10 todos' });
+  
+    return next();
+
 }
 
 function checksTodoExists(request, response, next) {
